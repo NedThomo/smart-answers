@@ -1,8 +1,12 @@
 require 'date'
 
 class Date
+  def finite?
+    true
+  end
+
   def infinite?
-    false
+    !finite?
   end
 end
 
@@ -14,22 +18,44 @@ end
 
 module SmartAnswer
   class DateRange
-    EARLIEST_DATE = Date::Infinity.new(-1)
-    LATEST_DATE = Date::Infinity.new(+1)
+    EARLIEST_DATE = -Date::Infinity.new
+    LATEST_DATE = Date::Infinity.new
+
+    class ComparableDate < Struct.new(:date)
+      include Comparable
+
+      def <=>(other)
+        if date.infinite? && other.date.finite?
+          result = other.date <=> date
+          result && -result
+        else
+          date <=> other.date
+        end
+      end
+    end
 
     attr_reader :begins_on, :ends_on
 
     def initialize(begins_on: EARLIEST_DATE, ends_on: LATEST_DATE)
       @begins_on = begins_on.to_date
       @ends_on = ends_on.to_date
+      @ends_on = [@begins_on - 1, @ends_on].max unless infinite?
     end
 
     def include?(date)
-      (date >= @begins_on) && (date <= @ends_on)
+      (ComparableDate.new(date.to_date) >= ComparableDate.new(@begins_on)) && (ComparableDate.new(date.to_date) <= ComparableDate.new(@ends_on))
     end
 
+    def intersection(other)
+      latest_begins_on = [ComparableDate.new(begins_on), ComparableDate.new(other.begins_on)].max.date
+      earliest_ends_on = [ComparableDate.new(ends_on), ComparableDate.new(other.ends_on)].min.date
+      self.class.new(begins_on: latest_begins_on, ends_on: earliest_ends_on)
+    end
+
+    alias_method :&, :intersection
+
     def number_of_days
-      [@begins_on, @ends_on].any?(&:infinite?) ? Float::INFINITY : (@ends_on - @begins_on).to_i + 1
+      infinite? ? Float::INFINITY : (@ends_on - @begins_on).to_i + 1
     end
 
     def ==(other)
@@ -42,6 +68,14 @@ module SmartAnswer
 
     def hash
       self.class.hash ^ [begins_on, ends_on].hash
+    end
+
+    def infinite?
+      [@begins_on, @ends_on].any?(&:infinite?)
+    end
+
+    def empty?
+      number_of_days == 0
     end
   end
 end

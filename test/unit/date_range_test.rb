@@ -35,6 +35,14 @@ module SmartAnswer
         refute @date_range.include?(Date.parse('1999-12-31'))
       end
 
+      should 'not include date infinitely before begins_on' do
+        refute @date_range.include?(-Date::Infinity.new)
+      end
+
+      should 'not include date infinitely after ends_on' do
+        refute @date_range.include?(Date::Infinity.new)
+      end
+
       should 'not include date after ends_on' do
         refute @date_range.include?(Date.parse('2000-01-08'))
       end
@@ -101,8 +109,16 @@ module SmartAnswer
         assert @date_range.include?(Date.parse('9999-01-01'))
       end
 
+      should 'include date infinitely far in the future' do
+        assert @date_range.include?(Date::Infinity.new)
+      end
+
       should 'have infinite number of days' do
         assert @date_range.number_of_days.infinite?
+      end
+
+      should 'be infinite' do
+        assert @date_range.infinite?
       end
     end
 
@@ -119,8 +135,16 @@ module SmartAnswer
         assert @date_range.include?(Date.parse('0000-01-01'))
       end
 
+      should 'include date infinitely far in the past' do
+        assert @date_range.include?(-Date::Infinity.new)
+      end
+
       should 'have infinite number of days' do
         assert @date_range.number_of_days.infinite?
+      end
+
+      should 'be infinite' do
+        assert @date_range.infinite?
       end
     end
 
@@ -135,6 +159,88 @@ module SmartAnswer
 
       should 'count leap day in number of days' do
         assert_equal 366, @date_range.number_of_days
+      end
+    end
+
+    context 'when range ends on the same day it begins' do
+      setup do
+        @date_range = DateRange.new(begins_on: Date.parse('2000-01-01'), ends_on: Date.parse('2000-01-01'))
+      end
+
+      should 'include begins_on date' do
+        assert @date_range.include?(@date_range.begins_on)
+      end
+
+      should 'contain one day' do
+        assert_equal 1, @date_range.number_of_days
+      end
+
+      should 'not be empty' do
+        refute @date_range.empty?
+      end
+
+      should 'not be infinite' do
+        refute @date_range.infinite?
+      end
+    end
+
+    context 'when range ends before it begins' do
+      setup do
+        @date_range = DateRange.new(begins_on: Date.parse('2000-12-31'), ends_on: Date.parse('2000-01-01'))
+      end
+
+      should 'not include begins_on date' do
+        refute @date_range.include?(@date_range.begins_on)
+      end
+
+      should 'not include ends_on date' do
+        refute @date_range.include?(@date_range.ends_on)
+      end
+
+      should 'contain zero days' do
+        assert_equal 0, @date_range.number_of_days
+      end
+
+      should 'be empty' do
+        assert @date_range.empty?
+      end
+    end
+
+    context 'intersection of' do
+      context 'two overlapping DateRanges' do
+        setup do
+          @date_range = DateRange.new(begins_on: Date.parse('2000-01-01'), ends_on: Date.parse('2000-12-31'))
+          @overlapping = DateRange.new(begins_on: Date.parse('2000-06-01'), ends_on: Date.parse('2001-05-31'))
+        end
+
+        should 'be the intersection of the two periods' do
+          intersection = @date_range & @overlapping
+          assert_equal DateRange.new(begins_on: @overlapping.begins_on, ends_on: @date_range.ends_on), intersection
+        end
+      end
+
+      context 'two non-overlapping DateRanges' do
+        setup do
+          @date_range = DateRange.new(begins_on: Date.parse('2000-01-01'), ends_on: Date.parse('2000-12-31'))
+          @non_overlapping = DateRange.new(begins_on: Date.parse('2002-01-01'), ends_on: Date.parse('2002-12-31'))
+        end
+
+        should 'be an empty DateRange' do
+          intersection = @date_range & @non_overlapping
+          assert intersection.empty?
+        end
+      end
+
+      context 'two infinite overlapping DateRanges' do
+        setup do
+          @date_range = DateRange.new(ends_on: Date.parse('2000-12-31'))
+          @overlapping = DateRange.new(begins_on: Date.parse('2000-06-01'))
+        end
+
+        should 'be the intersection of the two periods' do
+          intersection = @date_range & @overlapping
+          assert_equal DateRange.new(begins_on: @overlapping.begins_on, ends_on: @date_range.ends_on), intersection
+        end
       end
     end
   end
