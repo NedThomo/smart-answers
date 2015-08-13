@@ -17,6 +17,13 @@ en-GB:
       when_did_your_tax_credits_award_end?:
         title: When did your tax credits award end?
         hint: You can find this on your award review.
+      when_did_you_start_trading?:
+        title: When did you start trading?
+      have_you_stopped_trading?:
+        title: Have you stopped trading?
+        hint: This means you’re no longer running your business.
+      when_did_you_stop_trading?:
+        title: When did you stop trading?
       when_do_your_business_accounts_start?:
         title: When do your business accounts start?
         hint: This is the start of your tax year for your business. For most people it will be 6 April.

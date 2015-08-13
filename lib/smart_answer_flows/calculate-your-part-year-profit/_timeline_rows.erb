@@ -1,0 +1,27 @@
+<% calculator.calendar_years.each do |range| %>
+  <%= timeline_row('Calendar Years', range.begins_on.year, range) %>
+<% end %>
+
+<% calculator.tax_years.each do |range| %>
+  <%= timeline_row('Tax Years', range.begins_on.year, range) %>
+<% end %>
+
+<% calculator.accounting_years.each do |range| %>
+  <%= timeline_row('Accounting Years', range.begins_on.year, range) %>
+<% end %>
+
+<%= timeline_row('Trading Period', 'Trading', calculator.trading_period) %>
+
+<% calculator.accounting_periods.each do |range| %>
+  <%= timeline_row('Accounting Periods (trading)', range.begins_on.year, range) %>
+<% end %>
+
+<%= timeline_row('Dates', 'Tax Credits Award Ends', calculator.tax_credits_award_ends_on) %>
+
+<%= timeline_row('Tax Credits / Universal Credit', 'TC', calculator.tax_credits_part_year) %>
+
+<%= timeline_row('Tax Credits / Universal Credit', 'UC', calculator.universal_credit_part_year) %>
+
+<% unless calculator.tax_credits_part_year_trading.empty? %>
+  <%= timeline_row('Tax Credit Part Year (trading)', 'Tax Credits & Trading', calculator.tax_credits_part_year_trading) %>
+<% end %>

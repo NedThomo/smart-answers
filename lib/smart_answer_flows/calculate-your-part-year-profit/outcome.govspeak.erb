@@ -1,19 +1,40 @@
 <% content_for :body do %>
-  Your part-year taxable profit is <%= format_money(calculator.part_year_profit) %>.
-
-  Use this figure to complete box 2.4 on your award review. Enter <%= format_money(0) %> if your profit you’ve made a loss (your part-year profit is less than <%= format_money(0) %>).
-
-  ^If you have more than one business, you need to calculate the part-year profits from all your businesses and add them together to complete box 2.4.^
-
-  You may be able to [make deductions from this amount](/link-to-guidance).
-
-  %If you changed your accounting period part way through the year, you’ll have to work out your part-year taxable profit [using the helpsheet](/link-to-guidance) that came with your Award Review.%
-
-  Details you’ve entered:
+  ## Details you entered
 
   Your tax credits award ended on: <%= format_date(calculator.tax_credits_award_ends_on) %>
 
-  Your business accounts started on: <%= format_date(calculator.accounts_start_on) %>
+  You started trading on: <%= format_date(calculator.started_trading_on) %>
 
-  Your estimated taxable profit between <%= format_date(calculator.basis_period.begins_on) %> and <%= format_date(calculator.basis_period.ends_on) %> was: <%= format_money(calculator.profit_for_current_period) %>
+  <% if calculator.stopped_trading? %>
+    You stopped trading on: <%= format_date(calculator.stopped_trading_on) %>
+  <% end %>
+
+  Your business accounts started on: <%= calculator.accounts_start_on.strftime('%e %B') %>
+
+  ## Timeline chart
+
+  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['timeline']}]}"></script>
+  <div id="timeline" style="height: 500px"></div>
+
+  <script>
+    google.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var container = document.getElementById('timeline');
+      var chart = new google.visualization.Timeline(container);
+      var dataTable = new google.visualization.DataTable();
+
+      dataTable.addColumn('string', 'Row Label');
+      dataTable.addColumn('string', 'Bar Label');
+      dataTable.addColumn('date',   'Begins On');
+      dataTable.addColumn('date',   'Ends On');
+
+      dataTable.addRows([
+        <%= render partial: 'timeline_rows.erb', locals: { calculator: calculator } %>
+      ]);
+      
+      chart.draw(dataTable, { timeline: { colorByRowLabel: true } });
+    };
+  </script>
+
 <% end %>

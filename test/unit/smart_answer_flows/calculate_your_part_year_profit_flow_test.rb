@@ -22,6 +22,43 @@ module SmartAnswer
         assert_equal Date.parse('2016-02-20'), @calculator.tax_credits_award_ends_on
       end
 
+      should 'go to have_you_stopped_trading? question' do
+        assert_equal :have_you_stopped_trading?, @new_state.current_node
+        assert_node_exists :have_you_stopped_trading?
+      end
+    end
+
+    context 'when answering yes to have_you_stopped_trading? question' do
+      setup do
+        setup_states_for_question(:have_you_stopped_trading?, responding_with: 'yes')
+      end
+
+      should 'go to when_did_you_stop_trading? question' do
+        assert_equal :when_did_you_stop_trading?, @new_state.current_node
+        assert_node_exists :when_did_you_stop_trading?
+      end
+    end
+
+    context 'when answering no to have_you_stopped_trading? question' do
+      setup do
+        setup_states_for_question(:have_you_stopped_trading?, responding_with: 'no')
+      end
+
+      should 'go to when_do_your_business_accounts_start? question' do
+        assert_equal :when_do_your_business_accounts_start?, @new_state.current_node
+        assert_node_exists :when_do_your_business_accounts_start?
+      end
+    end
+
+    context 'when answering when_did_you_stop_trading? question' do
+      setup do
+        setup_states_for_question(:when_did_you_stop_trading?, responding_with: '2016-02-20')
+      end
+
+      should 'store parsed response on calculator as stopped_trading_on' do
+        assert_equal Date.parse('2016-02-20'), @calculator.stopped_trading_on
+      end
+
       should 'go to when_do_your_business_accounts_start? question' do
         assert_equal :when_do_your_business_accounts_start?, @new_state.current_node
         assert_node_exists :when_do_your_business_accounts_start?
