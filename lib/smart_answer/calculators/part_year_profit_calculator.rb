@@ -44,6 +44,10 @@ module SmartAnswer
         DateRange.new(begins_on: started_trading_on, ends_on: stopped_trading_on) & timeline_window
       end
 
+      def trading_period_before_award_ends
+        trading_period & DateRange.new(ends_on: tax_credits_award_ends_on)
+      end
+
       def accounting_periods
         accounting_years.map { |ac| ac & trading_period }.reject(&:empty?)
       end

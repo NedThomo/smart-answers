@@ -26,13 +26,14 @@
 
       dataTable.addColumn('string', 'Row Label');
       dataTable.addColumn('string', 'Bar Label');
+      dataTable.addColumn({type: 'string', role: 'tooltip'});
       dataTable.addColumn('date',   'Begins On');
       dataTable.addColumn('date',   'Ends On');
 
       dataTable.addRows([
         <%= render partial: 'timeline_rows.erb', locals: { calculator: calculator } %>
       ]);
-      
+
       chart.draw(dataTable, { timeline: { colorByRowLabel: true } });
     };
   </script>

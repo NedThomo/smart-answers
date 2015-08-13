@@ -8,7 +8,7 @@ module SmartAnswer
     def define
       name 'calculate-your-part-year-profit'
 
-      status :draft
+      status :published
       satisfies_need "103438"
 
       calculator = @calculator

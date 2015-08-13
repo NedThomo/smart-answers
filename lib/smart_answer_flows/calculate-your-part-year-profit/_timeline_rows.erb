@@ -10,13 +10,15 @@
   <%= timeline_row('Accounting Years', range.begins_on.year, range) %>
 <% end %>
 
+<%= timeline_row('Dates', 'Tax Credits Award Ends', calculator.tax_credits_award_ends_on) %>
+
 <%= timeline_row('Trading Period', 'Trading', calculator.trading_period) %>
+
+<%= timeline_row('Trading before Award Ends', 'Trading', calculator.trading_period_before_award_ends) %>
 
 <% calculator.accounting_periods.each do |range| %>
   <%= timeline_row('Accounting Periods (trading)', range.begins_on.year, range) %>
 <% end %>
-
-<%= timeline_row('Dates', 'Tax Credits Award Ends', calculator.tax_credits_award_ends_on) %>
 
 <%= timeline_row('Tax Credits / Universal Credit', 'TC', calculator.tax_credits_part_year) %>
 

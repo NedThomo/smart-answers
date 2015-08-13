@@ -13,11 +13,13 @@ module SmartAnswer
       case date_or_range
       when Date
         begins_on = ends_on = date_or_range
+        tooltip = format_date(begins_on)
       when DateRange
         bar_label = "#{bar_label} (#{date_or_range.number_of_days} days)"
         begins_on, ends_on = date_or_range.begins_on, date_or_range.ends_on
+        tooltip = "#{format_date(begins_on)} - #{format_date(ends_on)} (#{date_or_range.number_of_days} days)"
       end
-      "['#{row_label}', '#{bar_label}', new Date('#{begins_on}'), new Date('#{ends_on}')],".html_safe
+      "['#{row_label}', '#{bar_label}', '#{tooltip}', new Date('#{begins_on}'), new Date('#{ends_on}')],".html_safe
     end
   end
 end
