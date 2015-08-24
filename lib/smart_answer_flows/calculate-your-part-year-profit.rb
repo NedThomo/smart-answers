@@ -1,19 +1,16 @@
 module SmartAnswer
   class CalculateYourPartYearProfitFlow < Flow
-    def initialize(calculator = Calculators::PartYearProfitCalculator.new)
-      @calculator = calculator
-      super()
-    end
-
     def define
       name 'calculate-your-part-year-profit'
 
       status :published
       satisfies_need "103438"
 
-      calculator = @calculator
-
       date_question :when_did_your_tax_credits_award_end? do
+        next_node_calculation :calculator do
+          Calculators::PartYearProfitCalculator.new
+        end
+
         next_node do |response|
           calculator.tax_credits_award_ends_on = response
           :when_did_you_start_trading?
