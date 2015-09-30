@@ -81,6 +81,18 @@ module SmartAnswer::Calculators
       end
     end
 
+    def self.dates_matching_pattern(from:, to:, pattern:)
+      dates = from..to
+      # create an array of all dates that would have been normal workdays
+      matching_dates = []
+      dates.each do |d|
+        if pattern.include?(d.wday.to_s)
+          matching_dates << d
+        end
+      end
+      matching_dates
+    end
+
   private
 
     def weekly_rate_on(date)
@@ -127,20 +139,16 @@ module SmartAnswer::Calculators
     end
 
     def init_normal_workdays_missed(days_of_the_week_worked)
-      dates = @sick_start_date..@sick_end_date
-      # create an array of all dates that would have been normal workdays
-      normal_workdays_missed = []
-      dates.each do |d|
-        if days_of_the_week_worked.include?(d.wday.to_s)
-          normal_workdays_missed << d
-        end
-      end
-      normal_workdays_missed
+      self.class.dates_matching_pattern(
+        from: @sick_start_date,
+        to: @sick_end_date,
+        pattern: days_of_the_week_worked
+      )
     end
 
     def init_payable_days
       # copy not to modify the instance variable we need to keep
-      payable_days_temp = @normal_workdays_missed
+      payable_days_temp = @normal_workdays_missed.dup
       ## 1. remove up to 3 first dates from the array if there are waiting days in this period
       payable_days_temp.shift(@waiting_days)
       ## 2. return only the first days_that_can_be_paid_for_this_period
