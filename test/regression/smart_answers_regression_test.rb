@@ -62,6 +62,12 @@ class SmartAnswersRegressionTest < ActionController::TestCase
     context "Smart Answer: #{flow_name}" do
       setup do
         next if self.class.setup_has_run? && !self.class.teardown_hooks_installed?
+
+        if flow_name == 'pay-leave-for-parents'
+          puts 'Preloading flows to speed up testing of pay-leave-for-parents Smartdown answer'
+          FLOW_REGISTRY_OPTIONS[:preload_flows] = true
+        end
+
         Timecop.freeze(Date.parse('2015-01-01'))
         stub_content_api_default_artefact
         WebMock.stub_request(:get, WorkingDays::BANK_HOLIDAYS_URL).to_return(body: File.open(fixture_file('bank_holidays.json')))
