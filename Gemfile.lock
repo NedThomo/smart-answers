@@ -79,7 +79,6 @@ GEM
     extlib (0.9.16)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
-    filesize (0.0.4)
     gds-api-adapters (24.4.0)
       link_header
       lrucache (~> 0.1.1)
@@ -301,7 +300,6 @@ DEPENDENCIES
   ci_reporter
   diffy (= 3.0.6)
   extlib (= 0.9.16)
-  filesize
   gds-api-adapters (~> 24.4.0)
   google-api-client
   govspeak (~> 3.3.0)
